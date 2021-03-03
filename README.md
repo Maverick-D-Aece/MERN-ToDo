@@ -1,4 +1,4 @@
-# MERN-Cart
+# MERN-ToDo
 
 This is my first take on the MERN Stack.
 
