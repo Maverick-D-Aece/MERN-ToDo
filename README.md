@@ -8,3 +8,4 @@ This is my first take on the MERN Stack.
 - Node and NPM
 - GraphQL Yoga
 - React App for Front-End
+- Appolo GraphQL for Communication between server and client
