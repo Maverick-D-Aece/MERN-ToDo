@@ -13,7 +13,7 @@ const Todo = mongoose.model("Todo", {
 
 const typeDefs = `
   type Query {
-    hello(name: String): String!
+	hello(name: String): String!      
 	todos: [Todo]
   }  
   type Todo {
