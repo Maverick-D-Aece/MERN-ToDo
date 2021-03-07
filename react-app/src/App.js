@@ -1,4 +1,3 @@
-import "./App.css";
 import { gql } from "@apollo/client";
 import { graphql } from "@apollo/client/react/hoc";
 
@@ -13,7 +12,6 @@ const TodosQuery = gql`
 `;
 
 function App(props) {
-	console.log(props);
 	const {
 		data: { loading, todos },
 	} = props;
@@ -21,10 +19,10 @@ function App(props) {
 		return null;
 	}
 	return (
-		<div className="App">
+		<div>
 			<h1>Your Todos</h1>
 			{todos.map((todo) => (
-				<div className="todo-container">{todo.text}</div>
+				<div key={`${todo.id}-todo-item`}>{todo.text}</div>
 			))}
 		</div>
 	);
