@@ -10,6 +10,9 @@ import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import CancelIcon from "@material-ui/icons/Cancel";
 
+import produce from "immer";
+import Form from "./Form";
+
 const TodosQuery = gql`
 	{
 		todos {
@@ -29,6 +32,16 @@ const UpdateMutation = gql`
 const RemoveMutation = gql`
 	mutation($id: ID!) {
 		removeTodo(id: $id)
+	}
+`;
+
+const CreateMutation = gql`
+	mutation($text: String!) {
+		createTodo(text: $text) {
+			id
+			text
+			complete
+		}
 	}
 `;
 
@@ -59,6 +72,28 @@ function App(props) {
 		});
 	};
 
+	const createTodo = async (text) => {
+		await props.createTodo({
+			variables: {
+				text,
+			},
+			// refetchQueries: [{ query: TodosQuery }],
+
+			update: (store, { data }) => {
+				// may wanna catch the potential error here, 'cause sometimes ... may not be in the cache
+				const todoData = store.readQuery({
+					query: TodosQuery,
+				});
+				store.writeQuery({
+					query: TodosQuery,
+					data: produce(todoData, (x) => {
+						x.todos.unshift(data); //* Unshift is not adding the new todo to the top of the list
+					}),
+				});
+			},
+		});
+	};
+
 	return (
 		<div style={{ display: "flex" }}>
 			<div style={{ margin: "auto", width: 400 }}>
@@ -72,6 +107,7 @@ function App(props) {
 					Your Todos
 				</h1>
 				<Paper elevation={3}>
+					<Form submit={createTodo} />
 					<List>
 						{todos.map((todo) => {
 							const labelId = `checkbox-list-label-${todo.id}`;
@@ -109,7 +145,9 @@ function App(props) {
 	);
 }
 
-export default graphql(RemoveMutation, { name: "removeTodo" })(
-	graphql(UpdateMutation, { name: "updateTodo" })(graphql(TodosQuery)(App))
+export default graphql(CreateMutation, { name: "createTodo" })(
+	graphql(RemoveMutation, { name: "removeTodo" })(
+		graphql(UpdateMutation, { name: "updateTodo" })(graphql(TodosQuery)(App))
+	)
 );
 // export default App;
