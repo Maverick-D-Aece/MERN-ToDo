@@ -26,6 +26,12 @@ const UpdateMutation = gql`
 	}
 `;
 
+const RemoveMutation = gql`
+	mutation($id: ID!) {
+		removeTodo(id: $id)
+	}
+`;
+
 function App(props) {
 	const {
 		data: { loading, todos },
@@ -44,8 +50,13 @@ function App(props) {
 		});
 	};
 
-	const removeTodo = (todo) => {
-		// remove todo
+	const removeTodo = async (todo) => {
+		await props.removeTodo({
+			variables: {
+				id: todo.id,
+			},
+			refetchQueries: [{ query: TodosQuery }],
+		});
 	};
 
 	return (
@@ -98,7 +109,7 @@ function App(props) {
 	);
 }
 
-export default graphql(UpdateMutation, { name: "updateTodo" })(
-	graphql(TodosQuery)(App)
+export default graphql(RemoveMutation, { name: "removeTodo" })(
+	graphql(UpdateMutation, { name: "updateTodo" })(graphql(TodosQuery)(App))
 );
 // export default App;
